@@ -1,0 +1,48 @@
+version: '3.9'
+
+services:
+    auth-db:
+        image: postgres:alpine
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+            - POSTGRES_DB=auth-db
+        ports: 
+            - "5432:5432"
+        restart: always
+        volumes:
+            - /var/lib/postgresql/data:/var/lib/postgresql/data
+
+    product-db:
+        image: postgres:alpine
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+            - POSTGRES_DB=product-db
+        ports:
+            - "5433:5432"
+        restart: always
+        volumes:
+            - /var/lib/postgresql/data:/var/lib/postgresql/data
+
+    sales-db:
+        image: mongo:5.0
+        ports:
+            - "27017:27017"
+        volumes:
+            - ~/apps/mongo:/data/db
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=mongodb
+            - MONGO_INITDB_ROOT_PASSWORD=mongodb
+
+    sales_rabbit:
+        image: rabbitmq:3-management-alpine
+        depends_on:
+            -   sales-db
+        ports:
+            - "5672:5672"
+            - "25676:25676"
+            - "15672:15672"
+
+volumes:
+    database-data:
